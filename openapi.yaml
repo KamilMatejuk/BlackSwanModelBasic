@@ -27,7 +27,7 @@ paths:
                   format: float
       responses:
         200:
-          description: greet a new user
+          description: action to take (-1 sell, 0 wait, +1 buy)
           content:
             text/plain:
               schema:
