@@ -4,13 +4,29 @@ from decouple import Config, RepositoryEnv
 from flask_socketio import SocketIO
 
 
-def hello(name: str):
+'''
+{
+  "price": 100.45,
+  "rsi": 24.876,
+  "value_account": 75,
+  "value_assets": 25
+}
+'''
+def action():
     try:
-        assert name.lower() != "world", "Hello World is to basic"
+        data = connexion.request.json
+        assert 'value_account' in data, 'Account value is required'
+        assert 'value_assets' in data, 'Assets value is required'
+        assert 'price' in data, 'Price is required'
+        assert 'rsi' in data, 'RSI is required'
     except Exception as ex:
         return jsonify({"error": "Invalid request schema", "details": str(ex)}), 401
-
-    return f'Hello {name}', 200
+    
+    can_buy = data['value_account'] > 0
+    can_sell = data['value_assets'] > 0
+    if can_sell and data['rsi'] > 75: return -1, 200
+    if can_buy and data['rsi'] < 25: return 1, 200
+    return 0, 200
 
 
 config = Config(RepositoryEnv('.env.local'))
